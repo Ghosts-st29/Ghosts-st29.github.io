@@ -71,11 +71,33 @@
     background-size: 60px 60px;
   }
 
+
+  /* custom page scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(79,142,247,0.65) rgba(255,255,255,0.04);
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.035);
+    border-left: 1px solid rgba(255,255,255,0.04);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(79,142,247,0.9), rgba(124,58,237,0.85));
+    border-radius: 999px;
+    border: 2px solid #060810;
+    box-shadow: 0 0 14px rgba(79,142,247,0.45);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #4f8ef7, #7c3aed);
+  }
+
   /* ---- LAYOUT ---- */
   .page {
     position: relative; z-index: 2;
     display: grid;
-    grid-template-columns: 520px 1fr;
+    /* flexible left column so the profile area does not squeeze the page */
+    grid-template-columns: minmax(380px, 42vw) minmax(0, 1fr);
     min-height: 100vh;
   }
 
@@ -84,15 +106,46 @@
     position: sticky; top: 0; height: 100vh;
     display: flex; flex-direction: column;
     justify-content: center; align-items: center;
-    padding: 3rem 2.5rem;
-    border-right: 1px solid var(--border);
+    padding: clamp(2rem, 4vw, 3rem) clamp(1.25rem, 3vw, 2.5rem);
+    border-right: none;
     overflow: hidden;
+    min-width: 0;
+    isolation: isolate;
+  }
+
+  /* futuristic divider between profile and content */
+  .left::before {
+    content: '';
+    position: absolute;
+    top: 0; right: -24px; bottom: 0;
+    width: 48px;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at center, rgba(79,142,247,0.16), transparent 58%),
+      linear-gradient(180deg, transparent, rgba(79,142,247,0.12), rgba(124,58,237,0.10), transparent);
+    filter: blur(10px);
+    opacity: 0.75;
+    z-index: 0;
+  }
+
+  .left::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 2px; height: 100%;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, transparent 0%, rgba(232,234,240,0.25) 18%, transparent 36%, transparent 64%, rgba(232,234,240,0.18) 82%, transparent 100%),
+      linear-gradient(180deg, var(--accent), var(--accent2)) 0 0 / 100% var(--scroll-progress, 0%) no-repeat,
+      linear-gradient(180deg, transparent, rgba(255,255,255,0.10), transparent);
+    box-shadow: 0 0 16px rgba(79,142,247,0.45), 0 0 28px rgba(124,58,237,0.25);
+    z-index: 3;
   }
 
   /* big ambient glow behind profile */
   .left-glow {
     position: absolute;
-    width: 500px; height: 500px;
+    width: clamp(320px, 45vw, 500px); height: clamp(320px, 45vw, 500px);
     border-radius: 50%;
     background: radial-gradient(circle, rgba(79,142,247,0.12) 0%, rgba(124,58,237,0.06) 40%, transparent 70%);
     pointer-events: none;
@@ -106,8 +159,11 @@
   /* orbit ring */
   .orbit-ring {
     position: relative;
-    width: 320px; height: 320px;
-    margin-bottom: 2.5rem;
+    width: clamp(250px, 28vw, 320px);
+    height: auto;
+    aspect-ratio: 1 / 1;
+    flex: 0 0 auto;
+    margin-bottom: clamp(1.5rem, 3vh, 2.5rem);
   }
 
   .orbit-circle {
@@ -118,7 +174,7 @@
   }
   .orbit-circle-2 {
     position: absolute;
-    inset: -36px;
+    inset: -11%;
     border-radius: 50%;
     border: 1px solid rgba(124,58,237,0.1);
     animation: spin 28s linear infinite reverse;
@@ -127,14 +183,14 @@
 
   /* profile picture */
   .profile-pic {
-    position: absolute; inset: 30px;
+    position: absolute; inset: 9.5%;
     border-radius: 50%;
     background: linear-gradient(135deg, #1a2035, #0d1117);
     border: 2px solid rgba(79,142,247,0.3);
     overflow: hidden;
     display: flex; align-items: center; justify-content: center;
     font-family: 'Syne', sans-serif;
-    font-size: 56px; font-weight: 800;
+    font-size: clamp(42px, 5vw, 56px); font-weight: 800;
     color: rgba(79,142,247,0.4);
     letter-spacing: -2px;
     box-shadow: 0 0 60px rgba(79,142,247,0.15), inset 0 0 40px rgba(0,0,0,0.5);
@@ -148,7 +204,7 @@
   /* floating tech logos */
   .logo-node {
     position: absolute;
-    width: 48px; height: 48px;
+    width: clamp(40px, 4.5vw, 48px); height: clamp(40px, 4.5vw, 48px);
     border-radius: 14px;
     background: rgba(13,17,23,0.9);
     border: 1px solid rgba(255,255,255,0.08);
@@ -163,7 +219,7 @@
     transform: scale(1.2) !important;
     box-shadow: 0 8px 32px rgba(79,142,247,0.3), 0 0 0 1px rgba(79,142,247,0.2);
   }
-  .logo-node svg { width: 26px; height: 26px; }
+  .logo-node svg { width: clamp(22px, 2.5vw, 26px); height: clamp(22px, 2.5vw, 26px); }
   @keyframes floatNode {
     from { transform: translateY(0px); }
     to   { transform: translateY(-8px); }
@@ -350,13 +406,45 @@
     animation: fadeUpDown 2s ease-in-out infinite;
   }
   @keyframes fadeUpDown { 0%,100%{transform:translateX(-50%) translateY(0);opacity:0.5} 50%{transform:translateX(-50%) translateY(-4px);opacity:1} }
+  .scroll-hint::before {
+    content: '';
+    width: 1px; height: 32px;
+    background: linear-gradient(180deg, transparent, var(--accent), transparent);
+    box-shadow: 0 0 12px rgba(79,142,247,0.55);
+    margin-bottom: 4px;
+  }
   .scroll-hint svg { width: 16px; height: 16px; }
+
+  @media (max-width: 1200px) {
+    .page { grid-template-columns: minmax(360px, 40vw) minmax(0, 1fr); }
+    .right { padding: 4rem 2.5rem; }
+    .summary { max-width: 340px; }
+  }
+
+  @media (max-height: 760px) and (min-width: 901px) {
+    .left { justify-content: flex-start; overflow-y: auto; }
+    .orbit-ring { width: clamp(220px, 24vw, 270px); margin-top: 1rem; margin-bottom: 1.25rem; }
+    .summary { margin-bottom: 1.2rem; line-height: 1.6; }
+    .title-badge { margin-bottom: 1rem; }
+    .scroll-hint { display: none; }
+  }
 
   @media (max-width: 900px) {
     .page { grid-template-columns: 1fr; }
-    .left { position: relative; height: auto; min-height: 100vh; border-right: none; border-bottom: 1px solid var(--border); }
+    .left { position: relative; height: auto; min-height: auto; border-right: none; border-bottom: none; padding: 4rem 1.5rem; }
+    .left::before { top: auto; right: 0; left: 0; bottom: -24px; width: 100%; height: 48px; background: linear-gradient(90deg, transparent, rgba(79,142,247,0.16), rgba(124,58,237,0.12), transparent); }
+    .left::after { top: auto; right: 0; left: 0; bottom: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, rgba(79,142,247,0.9), rgba(124,58,237,0.9), transparent); }
     .right { padding: 3rem 1.5rem; }
     .skill-grid { grid-template-columns: 1fr; }
+    .orbit-ring { width: min(78vw, 320px); }
+    .scroll-hint { display: none; }
+  }
+
+  @media (max-width: 420px) {
+    .orbit-ring { width: min(74vw, 280px); }
+    .contact-row { width: 100%; }
+    .contact-pill { max-width: 100%; overflow-wrap: anywhere; justify-content: center; }
+    .name { font-size: 1.65rem; }
   }
 </style>
 </head>
@@ -532,7 +620,7 @@
       <div class="exp-item">
         <div class="exp-role">Frontend Developer Intern</div>
         <div class="exp-company">CBI Innovation</div>
-        <div class="exp-date">2024 – Present</div>
+        <div class="exp-date">Current</div>
         <div class="exp-desc">Building and maintaining responsive web interfaces as part of a professional innovation-focused team. Applying AI-assisted development with a disciplined review process — evaluating all AI-generated code for correctness, alignment with requirements, and maintainability before integration. Collaborating on real-world client projects and rapidly adapting to new tools and frameworks in a dynamic startup environment.</div>
       </div>
     </section>
@@ -552,8 +640,18 @@
   const cursor = document.getElementById('cursor');
   const ring = document.getElementById('cursorRing');
   const ambient = document.getElementById('ambient');
+  const leftPanel = document.querySelector('.left');
   let mx = window.innerWidth/2, my = window.innerHeight/2;
   let rx = mx, ry = my;
+
+  function updateScrollDivider() {
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+    leftPanel.style.setProperty('--scroll-progress', `${Math.min(100, Math.max(0, progress))}%`);
+  }
+  updateScrollDivider();
+  window.addEventListener('scroll', updateScrollDivider, { passive: true });
+  window.addEventListener('resize', updateScrollDivider);
 
   document.addEventListener('mousemove', e => {
     mx = e.clientX; my = e.clientY;
